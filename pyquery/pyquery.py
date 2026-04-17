@@ -37,15 +37,12 @@ basestring = (str, bytes)
 
 
 def getargspec(func):
-    args = inspect.signature(func).parameters.values()
-    return [p.name for p in args
-            if p.kind == p.POSITIONAL_OR_KEYWORD]
+    pass
 
 
 def with_camel_case_alias(func):
     """decorator for methods who required a camelcase alias"""
-    _camel_case_aliases.add(func.__name__)
-    return func
+    pass
 
 
 _camel_case_aliases = set()
@@ -110,7 +107,7 @@ def fromstring(context, parser=None, custom_parser=None):
 
 
 def callback(func, *args):
-    return func(*args[:func.__code__.co_argcount])
+    pass
 
 
 class NoDefault(object):
@@ -252,8 +249,7 @@ class PyQuery(list):
         list.__init__(self, elements)
 
     def _css_to_xpath(self, selector, prefix='descendant-or-self::'):
-        selector = selector.replace('[@', '[')
-        return self._translator.css_to_xpath(selector, prefix)
+        pass
 
     def _copy(self, *args, **kwargs):
         kwargs.setdefault('namespaces', self.namespaces)
@@ -300,12 +296,7 @@ class PyQuery(list):
             >>> list(d.items('a')) == list(d('a').items())
             True
         """
-        if selector:
-            elems = self(selector) or []
-        else:
-            elems = self
-        for elem in elems:
-            yield self._copy(elem, parent=self)
+        pass
 
     def xhtml_to_html(self):
         """Remove xhtml namespace:
@@ -317,13 +308,7 @@ class PyQuery(list):
             >>> doc.xhtml_to_html()
             [<html>]
         """
-        try:
-            root = self[0].getroottree()
-        except IndexError:
-            pass
-        else:
-            lxml.html.xhtml_to_html(root)
-        return self
+        pass
 
     def remove_namespaces(self):
         """Remove all namespaces:
@@ -334,15 +319,7 @@ class PyQuery(list):
             >>> doc.remove_namespaces()
             [<foo>]
         """
-        try:
-            root = self[0].getroottree()
-        except IndexError:
-            pass
-        else:
-            for el in root.iter('{*}*'):
-                if el.tag.startswith('{'):
-                    el.tag = el.tag.split('}', 1)[1]
-        return self
+        pass
 
     def __str__(self):
         """xml representation of current nodes::
@@ -389,17 +366,13 @@ class PyQuery(list):
     def root(self):
         """return the xml root element
         """
-        if self._parent is not no_default:
-            return self._parent[0].getroottree()
-        return self[0].getroottree()
+        pass
 
     @property
     def encoding(self):
         """return the xml encoding of the root element
         """
-        root = self.root
-        if root is not None:
-            return self.root.docinfo.encoding
+        pass
 
     ##############
     # Traversing #
@@ -409,59 +382,25 @@ class PyQuery(list):
         """Filters the selection set only, as opposed to also including
            descendants.
         """
-        if selector is None:
-            results = elements
-        else:
-            xpath = self._css_to_xpath(selector, 'self::')
-            results = []
-            for tag in elements:
-                results.extend(tag.xpath(xpath, namespaces=self.namespaces))
-        if reverse:
-            results.reverse()
-        if unique:
-            result_list = results
-            results = []
-            for item in result_list:
-                if item not in results:
-                    results.append(item)
-        return self._copy(results, parent=self)
+        pass
 
     def parent(self, selector=None):
-        return self._filter_only(
-            selector,
-            [e.getparent() for e in self if e.getparent() is not None],
-            unique=True)
+        pass
 
     def prev(self, selector=None):
-        return self._filter_only(
-            selector,
-            [e.getprevious() for e in self if e.getprevious() is not None])
+        pass
 
     def next(self, selector=None):
-        return self._filter_only(
-            selector,
-            [e.getnext() for e in self if e.getnext() is not None])
+        pass
 
     def _traverse(self, method):
-        for e in self:
-            current = getattr(e, method)()
-            while current is not None:
-                yield current
-                current = getattr(current, method)()
+        pass
 
     def _traverse_parent_topdown(self):
-        for e in self:
-            this_list = []
-            current = e.getparent()
-            while current is not None:
-                this_list.append(current)
-                current = current.getparent()
-            this_list.reverse()
-            for j in this_list:
-                yield j
+        pass
 
     def _next_all(self):
-        return [e for e in self._traverse('getnext')]
+        pass
 
     @with_camel_case_alias
     def next_all(self, selector=None):
@@ -473,7 +412,7 @@ class PyQuery(list):
         >>> d('p:last').nextAll()
         [<img>]
         """
-        return self._filter_only(selector, self._next_all())
+        pass
 
     @with_camel_case_alias
     def next_until(self, selector, filter_=None):
@@ -487,17 +426,10 @@ class PyQuery(list):
         >>> d('h2:first').nextUntil('h2')
         [<p>, <p>]
         """
-        return self._filter_only(
-            filter_, [
-                e
-                for q in itertools.takewhile(
-                    lambda q: not q.is_(selector), self.next_all().items())
-                for e in q
-            ]
-        )
+        pass
 
     def _prev_all(self):
-        return [e for e in self._traverse('getprevious')]
+        pass
 
     @with_camel_case_alias
     def prev_all(self, selector=None):
@@ -509,7 +441,7 @@ class PyQuery(list):
         >>> d('p:last').prevAll()
         [<p.hello>]
         """
-        return self._filter_only(selector, self._prev_all(), reverse=True)
+        pass
 
     def siblings(self, selector=None):
         """
@@ -521,7 +453,7 @@ class PyQuery(list):
          [<img>]
 
         """
-        return self._filter_only(selector, self._prev_all() + self._next_all())
+        pass
 
     def parents(self, selector=None):
         """
@@ -533,11 +465,7 @@ class PyQuery(list):
         >>> d('.hello').parents('p')
         []
         """
-        return self._filter_only(
-            selector,
-            [e for e in self._traverse_parent_topdown()],
-            unique=True
-        )
+        pass
 
     def children(self, selector=None):
         """Filter elements that are direct children of self using optional
@@ -551,8 +479,7 @@ class PyQuery(list):
             >>> d.children('.hello')
             [<p.hello>]
         """
-        elements = [child for tag in self for child in tag.getchildren()]
-        return self._filter_only(selector, elements)
+        pass
 
     def closest(self, selector=None):
         """
@@ -566,14 +493,7 @@ class PyQuery(list):
         >>> d('strong').closest('form')
         []
         """
-        result = []
-        for current in self:
-            while (current is not None and
-                    not self._copy(current).is_(selector)):
-                current = current.getparent()
-            if current is not None:
-                result.append(current)
-        return self._copy(result, parent=self)
+        pass
 
     def contents(self):
         """
@@ -583,11 +503,7 @@ class PyQuery(list):
             >>> d.contents()  # doctest: +ELLIPSIS
             ['hello ', <Element b at ...>]
         """
-        results = []
-        for elem in self:
-            results.extend(elem.xpath('child::text()|child::*',
-                           namespaces=self.namespaces))
-        return self._copy(results, parent=self)
+        pass
 
     def filter(self, selector):
         """Filter elements in self using selector (string or function):
@@ -604,22 +520,7 @@ class PyQuery(list):
             >>> d('p').filter(lambda i, this: PyQuery(this).text() == 'Hi')
             [<p.hello>]
         """
-        if not hasattr(selector, '__call__'):
-            return self._filter_only(selector, self)
-        else:
-            elements = []
-            args = getargspec(callback)
-            try:
-                for i, this in enumerate(self):
-                    if len(args) == 1:
-                        selector.__globals__['this'] = this
-                    if callback(selector, i, this):
-                        elements.append(this)
-            finally:
-                f_globals = selector.__globals__
-                if 'this' in f_globals:
-                    del f_globals['this']
-            return self._copy(elements, parent=self)
+        pass
 
     def not_(self, selector):
         """Return elements that don't match the given selector:
@@ -628,9 +529,7 @@ class PyQuery(list):
             >>> d('p').not_('.hello')
             [<p>]
         """
-        exclude = set(self._copy(selector, self))
-        return self._copy([e for e in self if e not in exclude],
-                          parent=self)
+        pass
 
     def is_(self, selector):
         """Returns True if selector matches at least one current element, else
@@ -648,7 +547,7 @@ class PyQuery(list):
 
         ..
         """
-        return bool(self._filter_only(selector, self))
+        pass
 
     def find(self, selector):
         """Find elements using selector traversing down from self:
@@ -660,15 +559,7 @@ class PyQuery(list):
             >>> d('p').eq(1).find('em')
             [<em>]
         """
-        xpath = self._css_to_xpath(selector)
-        results = [child.xpath(xpath, namespaces=self.namespaces)
-                   for tag in self
-                   for child in tag.getchildren()]
-        # Flatten the results
-        elements = []
-        for r in results:
-            elements.extend(r)
-        return self._copy(elements, parent=self)
+        pass
 
     def eq(self, index):
         """Return PyQuery of only the element with the provided index::
@@ -683,27 +574,12 @@ class PyQuery(list):
 
         ..
         """
-        # Slicing will return empty list when index=-1
-        # we should handle out of bound by ourselves
-        try:
-            items = self[index]
-        except IndexError:
-            items = []
-        return self._copy(items, parent=self)
+        pass
 
     def each(self, func):
         """apply func on each nodes
         """
-        try:
-            for i, element in enumerate(self):
-                func.__globals__['this'] = element
-                if callback(func, i, element) is False:
-                    break
-        finally:
-            f_globals = func.__globals__
-            if 'this' in f_globals:
-                del f_globals['this']
-        return self
+        pass
 
     def map(self, func):
         """Returns a new PyQuery after transforming current items with func.
@@ -722,28 +598,14 @@ class PyQuery(list):
             ['Hi', 'there', 'Bye']
 
         """
-        items = []
-        try:
-            for i, element in enumerate(self):
-                func.__globals__['this'] = element
-                result = callback(func, i, element)
-                if result is not None:
-                    if not isinstance(result, list):
-                        items.append(result)
-                    else:
-                        items.extend(result)
-        finally:
-            f_globals = func.__globals__
-            if 'this' in f_globals:
-                del f_globals['this']
-        return self._copy(items, parent=self)
+        pass
 
     @property
     def length(self):
-        return len(self)
+        pass
 
     def size(self):
-        return len(self)
+        pass
 
     def end(self):
         """Break out of a level of traversal and return to the parent level.
@@ -753,7 +615,7 @@ class PyQuery(list):
             >>> d('p').eq(1).find('em').end().end()
             [<p>, <p>]
         """
-        return self._parent
+        pass
 
     ##############
     # Attributes #
@@ -761,38 +623,7 @@ class PyQuery(list):
     def attr(self, *args, **kwargs):
         """Attributes manipulation
         """
-
-        mapping = {'class_': 'class', 'for_': 'for'}
-
-        attr = value = no_default
-        length = len(args)
-        if length == 1:
-            attr = args[0]
-            attr = mapping.get(attr, attr)
-        elif length == 2:
-            attr, value = args
-            attr = mapping.get(attr, attr)
-        elif kwargs:
-            attr = {}
-            for k, v in kwargs.items():
-                attr[mapping.get(k, k)] = v
-        else:
-            raise ValueError('Invalid arguments %s %s' % (args, kwargs))
-
-        if not self:
-            return None
-        elif isinstance(attr, dict):
-            for tag in self:
-                for key, value in attr.items():
-                    tag.set(key, value)
-        elif value is no_default:
-            return self[0].get(attr)
-        elif value is None:
-            return self.remove_attr(attr)
-        else:
-            for tag in self:
-                tag.set(attr, value)
-        return self
+        pass
 
     @with_camel_case_alias
     def remove_attr(self, name):
@@ -806,12 +637,7 @@ class PyQuery(list):
 
         ..
         """
-        for tag in self:
-            try:
-                del tag.attrib[name]
-            except KeyError:
-                pass
-        return self
+        pass
 
     attr = FlexibleElement(pget=attr, pdel=remove_attr)
 
@@ -821,12 +647,12 @@ class PyQuery(list):
     def height(self, value=no_default):
         """set/get height of element
         """
-        return self.attr('height', value)
+        pass
 
     def width(self, value=no_default):
         """set/get width of element
         """
-        return self.attr('width', value)
+        pass
 
     @with_camel_case_alias
     def has_class(self, name):
@@ -840,7 +666,7 @@ class PyQuery(list):
 
         ..
         """
-        return self.is_('.%s' % name)
+        pass
 
     @with_camel_case_alias
     def add_class(self, value):
@@ -854,12 +680,7 @@ class PyQuery(list):
 
         ..
         """
-        for tag in self:
-            values = value.split(' ')
-            classes = (tag.get('class') or '').split()
-            classes += [v for v in values if v not in classes]
-            tag.set('class', ' '.join(classes))
-        return self
+        pass
 
     @with_camel_case_alias
     def remove_class(self, value):
@@ -873,17 +694,7 @@ class PyQuery(list):
 
         ..
         """
-        for tag in self:
-            values = value.split(' ')
-            classes = set((tag.get('class') or '').split())
-            classes.difference_update(values)
-            classes.difference_update([''])
-            classes = ' '.join(classes)
-            if classes.strip():
-                tag.set('class', classes)
-            elif tag.get('class'):
-                tag.set('class', classes)
-        return self
+        pass
 
     @with_camel_case_alias
     def toggle_class(self, value):
@@ -896,54 +707,12 @@ class PyQuery(list):
             [<div>]
 
         """
-        for tag in self:
-            values = value.split(' ')
-            classes = (tag.get('class') or '').split()
-            values_to_add = [v for v in values if v not in classes]
-            values_to_del = [v for v in values if v in classes]
-            classes = [v for v in classes if v not in values_to_del]
-            classes += values_to_add
-            tag.set('class', ' '.join(classes))
-        return self
+        pass
 
     def css(self, *args, **kwargs):
         """css attributes manipulation
         """
-
-        attr = value = no_default
-        length = len(args)
-        if length == 1:
-            attr = args[0]
-        elif length == 2:
-            attr, value = args
-        elif kwargs:
-            attr = kwargs
-        else:
-            raise ValueError('Invalid arguments %s %s' % (args, kwargs))
-
-        if isinstance(attr, dict):
-            for tag in self:
-                stripped_keys = [key.strip().replace('_', '-')
-                                 for key in attr.keys()]
-                current = [el.strip()
-                           for el in (tag.get('style') or '').split(';')
-                           if el.strip()
-                           and el.split(':')[0].strip() not in stripped_keys]
-                for key, value in attr.items():
-                    key = key.replace('_', '-')
-                    current.append('%s: %s' % (key, value))
-                tag.set('style', '; '.join(current))
-        elif isinstance(value, basestring):
-            attr = attr.replace('_', '-')
-            for tag in self:
-                current = [
-                    el.strip()
-                    for el in (tag.get('style') or '').split(';')
-                    if (el.strip() and
-                        not el.split(':')[0].strip() == attr.strip())]
-                current.append('%s: %s' % (attr, value))
-                tag.set('style', '; '.join(current))
-        return self
+        pass
 
     css = FlexibleElement(pget=css, pset=css)
 
@@ -957,7 +726,7 @@ class PyQuery(list):
             <div style="display: none"/>
 
         """
-        return self.css('display', 'none')
+        pass
 
     def show(self):
         """Add display:block to elements style:
@@ -966,7 +735,7 @@ class PyQuery(list):
             <div style="display: block"/>
 
         """
-        return self.css('display', 'block')
+        pass
 
     ########
     # HTML #
@@ -1001,72 +770,7 @@ class PyQuery(list):
             ['you', 'hou']
 
         """
-        def _get_value(tag):
-            # <textarea>
-            if tag.tag == 'textarea':
-                return self._copy(tag).html(escape=False)
-            # <select>
-            elif tag.tag == 'select':
-                if 'multiple' in tag.attrib:
-                    # Only extract value if selected
-                    selected = self._copy(tag)('option[selected]')
-                    # Rebuild list to avoid serialization error
-                    return list(selected.map(
-                        lambda _, o: self._copy(o).attr('value')
-                    ))
-                selected_option = self._copy(tag)('option[selected]:last')
-                if selected_option:
-                    return selected_option.attr('value')
-                else:
-                    return self._copy(tag)('option').attr('value')
-            # <input type="checkbox"> or <input type="radio">
-            elif self.is_(':checkbox,:radio'):
-                val = self._copy(tag).attr('value')
-                if val is None:
-                    return 'on'
-                else:
-                    return val
-            # <input>
-            elif tag.tag == 'input':
-                val = self._copy(tag).attr('value')
-                return val.replace('\n', '') if val else ''
-            # everything else.
-            return self._copy(tag).attr('value') or ''
-
-        def _set_value(pq, value):
-            for tag in pq:
-                # <select>
-                if tag.tag == 'select':
-                    if not isinstance(value, list):
-                        value = [value]
-
-                    def _make_option_selected(_, elem):
-                        pq = self._copy(elem)
-                        if pq.attr('value') in value:
-                            pq.attr('selected', 'selected')
-                            if 'multiple' not in tag.attrib:
-                                del value[:]  # Ensure it toggles first match
-                        else:
-                            pq.removeAttr('selected')
-
-                    self._copy(tag)('option').each(_make_option_selected)
-                    continue
-                # Stringify array
-                if isinstance(value, list):
-                    value = ','.join(value)
-                # <textarea>
-                if tag.tag == 'textarea':
-                    self._copy(tag).text(value)
-                    continue
-                # <input> and everything else.
-                self._copy(tag).attr('value', value)
-
-        if value is no_default:
-            if len(self):
-                return _get_value(self[0])
-        else:
-            _set_value(self, value)
-            return self
+        pass
 
     def html(self, value=no_default, **kwargs):
         """Get or set the html representation of sub nodes.
@@ -1092,42 +796,7 @@ class PyQuery(list):
             >>> print(d)
             <div><span>Youhou !</span></div>
         """
-        if value is no_default:
-            if not self:
-                return None
-            tag = self[0]
-            children = tag.getchildren()
-            html = tag.text or ''
-            if kwargs.pop('escape', True):
-                html = escape(html, quote=False)
-            if not children:
-                return html
-            if 'encoding' not in kwargs:
-                kwargs['encoding'] = str
-            html += u''.join([etree.tostring(e, **kwargs)
-                              for e in children])
-            return html
-        else:
-            if isinstance(value, self.__class__):
-                new_html = str(value)
-            elif isinstance(value, basestring):
-                new_html = value
-            elif not value:
-                new_html = ''
-            else:
-                raise ValueError(type(value))
-
-            for tag in self:
-                for child in tag.getchildren():
-                    tag.remove(child)
-                root = fromstring(
-                    u'<root>' + new_html + u'</root>',
-                    self.parser)[0]
-                children = root.getchildren()
-                if children:
-                    tag.extend(children)
-                tag.text = root.text
-        return self
+        pass
 
     @with_camel_case_alias
     def outer_html(self, method="html"):
@@ -1147,14 +816,7 @@ class PyQuery(list):
 
         ..
         """
-
-        if not self:
-            return None
-        e0 = self[0]
-        if e0.tail:
-            e0 = deepcopy(e0)
-            e0.tail = ''
-        return etree.tostring(e0, encoding=str, method=method)
+        pass
 
     def text(self, value=no_default, **kwargs):
         """Get or set the text representation of sub nodes.
@@ -1185,20 +847,7 @@ class PyQuery(list):
             <div>Youhou !</div>
 
         """
-
-        if value is no_default:
-            if not self:
-                return ''
-            return ' '.join(
-                self._copy(tag).html(escape=False) if tag.tag == 'textarea' else
-                extract_text(tag, **kwargs) for tag in self
-            )
-
-        for tag in self:
-            for child in tag.getchildren():
-                tag.remove(child)
-            tag.text = value
-        return self
+        pass
 
     ################
     # Manipulating #
@@ -1244,86 +893,40 @@ class PyQuery(list):
     def append_to(self, value):
         """append nodes to value
         """
-        value.append(self)
-        return self
+        pass
 
     def prepend(self, value):
         """prepend value to nodes
         """
-        root, root_text = self._get_root(value)
-        for i, tag in enumerate(self):
-            if not tag.text:
-                tag.text = ''
-            if len(root) > 0:
-                root[-1].tail = tag.text
-                tag.text = root_text
-            else:
-                tag.text = root_text + tag.text
-            if i > 0:
-                root = deepcopy(list(root))
-            tag[:0] = root
-            root = tag[:len(root)]
-        return self
+        pass
 
     @with_camel_case_alias
     def prepend_to(self, value):
         """prepend nodes to value
         """
-        value.prepend(self)
-        return self
+        pass
 
     def after(self, value):
         """add value after nodes
         """
-        root, root_text = self._get_root(value)
-        for i, tag in enumerate(self):
-            if not tag.tail:
-                tag.tail = ''
-            tag.tail += root_text
-            if i > 0:
-                root = deepcopy(list(root))
-            parent = tag.getparent()
-            index = parent.index(tag) + 1
-            parent[index:index] = root
-            root = parent[index:len(root)]
-        return self
+        pass
 
     @with_camel_case_alias
     def insert_after(self, value):
         """insert nodes after value
         """
-        value.after(self)
-        return self
+        pass
 
     def before(self, value):
         """insert value before nodes
         """
-        root, root_text = self._get_root(value)
-        for i, tag in enumerate(self):
-            previous = tag.getprevious()
-            if previous is not None:
-                if not previous.tail:
-                    previous.tail = ''
-                previous.tail += root_text
-            else:
-                parent = tag.getparent()
-                if not parent.text:
-                    parent.text = ''
-                parent.text += root_text
-            if i > 0:
-                root = deepcopy(list(root))
-            parent = tag.getparent()
-            index = parent.index(tag)
-            parent[index:index] = root
-            root = parent[index:len(root)]
-        return self
+        pass
 
     @with_camel_case_alias
     def insert_before(self, value):
         """insert nodes before value
         """
-        value.before(self)
-        return self
+        pass
 
     def wrap(self, value):
         """A string of HTML that will be created on the fly and wrapped around
@@ -1336,29 +939,7 @@ class PyQuery(list):
             <div><span>youhou</span></div>
 
         """
-        assert isinstance(value, basestring)
-        value = fromstring(value)[0]
-        nodes = []
-        for tag in self:
-            wrapper = deepcopy(value)
-            # FIXME: using iterchildren is probably not optimal
-            if not wrapper.getchildren():
-                wrapper.append(deepcopy(tag))
-            else:
-                childs = [c for c in wrapper.iterchildren()]
-                child = childs[-1]
-                child.append(deepcopy(tag))
-            nodes.append(wrapper)
-
-            parent = tag.getparent()
-            if parent is not None:
-                for t in parent.iterchildren():
-                    if t is tag:
-                        t.addnext(wrapper)
-                        parent.remove(t)
-                        break
-        self[:] = nodes
-        return self
+        pass
 
     @with_camel_case_alias
     def wrap_all(self, value):
@@ -1375,39 +956,7 @@ class PyQuery(list):
 
         ..
         """
-        if not self:
-            return self
-
-        assert isinstance(value, basestring)
-        value = fromstring(value)[0]
-        wrapper = deepcopy(value)
-        if not wrapper.getchildren():
-            child = wrapper
-        else:
-            childs = [c for c in wrapper.iterchildren()]
-            child = childs[-1]
-
-        replace_childs = True
-        parent = self[0].getparent()
-        if parent is None:
-            parent = no_default
-
-        # add nodes to wrapper and check parent
-        for tag in self:
-            child.append(deepcopy(tag))
-            if tag.getparent() is not parent:
-                replace_childs = False
-
-        # replace nodes i parent if possible
-        if parent is not no_default and replace_childs:
-            childs = [c for c in parent.iterchildren()]
-            if len(childs) == len(self):
-                for tag in self:
-                    parent.remove(tag)
-                parent.append(wrapper)
-
-        self[:] = [wrapper]
-        return self
+        pass
 
     @with_camel_case_alias
     def replace_with(self, value):
@@ -1422,43 +971,23 @@ class PyQuery(list):
             <html><span/></html>
 
         """
-        if isinstance(value, PyQuery):
-            value = str(value)
-        if hasattr(value, '__call__'):
-            for i, element in enumerate(self):
-                self._copy(element).before(
-                    value(i, element) + (element.tail or ''))
-                parent = element.getparent()
-                parent.remove(element)
-        else:
-            for tag in self:
-                self._copy(tag).before(value + (tag.tail or ''))
-                parent = tag.getparent()
-                parent.remove(tag)
-        return self
+        pass
 
     @with_camel_case_alias
     def replace_all(self, expr):
         """replace nodes by expr
         """
-        if self._parent is no_default:
-            raise ValueError(
-                'replaceAll can only be used with an object with parent')
-        self._parent(expr).replace_with(self)
-        return self
+        pass
 
     def clone(self):
         """return a copy of nodes
         """
-        return PyQuery([deepcopy(tag) for tag in self])
+        pass
 
     def empty(self):
         """remove nodes content
         """
-        for tag in self:
-            tag.text = None
-            tag[:] = []
-        return self
+        pass
 
     def remove(self, expr=no_default):
         """Remove nodes:
@@ -1472,25 +1001,7 @@ class PyQuery(list):
              >>> print(d)
              <div>Maybe <em>she</em> does  know</div>
         """
-        if expr is no_default:
-            for tag in self:
-                parent = tag.getparent()
-                if parent is not None:
-                    if tag.tail:
-                        prev = tag.getprevious()
-                        if prev is None:
-                            if not parent.text:
-                                parent.text = ''
-                            parent.text += tag.tail
-                        else:
-                            if not prev.tail:
-                                prev.tail = ''
-                            prev.tail += tag.tail
-                    parent.remove(tag)
-        else:
-            results = self._copy(expr, self)
-            results.remove()
-        return self
+        pass
 
     class Fn(object):
         """Hook for defining custom function (like the jQuery.fn):
@@ -1507,8 +1018,7 @@ class PyQuery(list):
         """
         def __setattr__(self, name, func):
             def fn(self, *args, **kwargs):
-                func.__globals__['this'] = self
-                return func(*args, **kwargs)
+                pass
             fn.__name__ = name
             setattr(PyQuery, name, fn)
     fn = Fn()
@@ -1529,10 +1039,7 @@ class PyQuery(list):
             >>> d.serializeArray() == [{'name': 'order', 'value': 'spam'}]
             True
         """
-        return list(map(
-            lambda p: {'name': p[0], 'value': p[1]},
-            self.serialize_pairs()
-        ))
+        pass
 
     def serialize(self):
         """Serialize form elements as a URL-encoded string.
@@ -1545,7 +1052,7 @@ class PyQuery(list):
             >>> d.serialize()
             'order=spam&order2=baked%20beans'
         """
-        return urlencode(self.serialize_pairs()).replace('+', '%20')
+        pass
 
     #####################################################
     # Additional methods that are not in the jQuery API #
@@ -1562,61 +1069,7 @@ class PyQuery(list):
             >>> d.serializePairs()
             [('order', 'spam')]
         """
-        # https://github.com/jquery/jquery/blob
-        # /2d4f53416e5f74fa98e0c1d66b6f3c285a12f0ce/src/serialize.js#L14
-        _submitter_types = ['submit', 'button', 'image', 'reset', 'file']
-
-        controls = self._copy([])
-        # Expand list of form controls
-        for el in self.items():
-            if el[0].tag == 'form':
-                form_id = el.attr('id')
-                if form_id:
-                    # Include inputs outside of their form owner
-                    root = self._copy(el.root.getroot())
-                    controls.extend(root(
-                        '#%s :not([form]):input, [form="%s"]:input'
-                        % (form_id, form_id)))
-                else:
-                    controls.extend(el(':not([form]):input'))
-            elif el[0].tag == 'fieldset':
-                controls.extend(el(':input'))
-            else:
-                controls.extend(el)
-        # Filter controls
-        selector = '[name]:enabled:not(button)'  # Not serializing image button
-        selector += ''.join(map(
-            lambda s: ':not([type="%s"])' % s,
-            _submitter_types))
-        controls = controls.filter(selector)
-
-        def _filter_out_unchecked(_, el):
-            el = controls._copy(el)
-            return not el.is_(':checkbox:not(:checked)') and \
-                not el.is_(':radio:not(:checked)')
-        controls = controls.filter(_filter_out_unchecked)
-
-        # jQuery serializes inputs with the datalist element as an ancestor
-        # contrary to WHATWG spec as of August 2018
-        #
-        # xpath = 'self::*[not(ancestor::datalist)]'
-        # results = []
-        # for tag in controls:
-        #     results.extend(tag.xpath(xpath, namespaces=controls.namespaces))
-        # controls = controls._copy(results)
-
-        # Serialize values
-        ret = []
-        for field in controls:
-            val = self._copy(field).val() or ''
-            if isinstance(val, list):
-                ret.extend(map(
-                    lambda v: (field.attrib['name'], v.replace('\n', '\r\n')),
-                    val
-                ))
-            else:
-                ret.append((field.attrib['name'], val.replace('\n', '\r\n')))
-        return ret
+        pass
 
     @with_camel_case_alias
     def serialize_dict(self):
@@ -1633,59 +1086,18 @@ class PyQuery(list):
             >>> d.serializeDict()
             OrderedDict({'order': ['spam', 'eggs'], 'order2': 'ham'})
         """
-        ret = OrderedDict()
-        for name, val in self.serialize_pairs():
-            if name not in ret:
-                ret[name] = val
-            elif not isinstance(ret[name], list):
-                ret[name] = [ret[name], val]
-            else:
-                ret[name].append(val)
-        return ret
+        pass
 
     @property
     def base_url(self):
         """Return the url of current html document or None if not available.
         """
-        if self._base_url is not None:
-            return self._base_url
-        if self._parent is not no_default:
-            return self._parent.base_url
+        pass
 
     def make_links_absolute(self, base_url=None):
         """Make all links absolute.
         """
-        if base_url is None:
-            base_url = self.base_url
-            if base_url is None:
-                raise ValueError((
-                    'You need a base URL to make your links'
-                    'absolute. It can be provided by the base_url parameter.'))
-
-        def repl(attr):
-            def rep(i, e):
-                attr_value = self(e).attr(attr)
-                # when label hasn't such attr, pass
-                if attr_value is None:
-                    return None
-
-                # skip specific "protocol" schemas
-                if any(attr_value.startswith(schema)
-                       for schema in ('tel:', 'callto:', 'sms:')):
-                    return None
-
-                return self(e).attr(attr,
-                                    urljoin(base_url, attr_value.strip()))
-            return rep
-
-        self('a').each(repl('href'))
-        self('link').each(repl('href'))
-        self('script').each(repl('src'))
-        self('img').each(repl('src'))
-        self('iframe').each(repl('src'))
-        self('form').each(repl('action'))
-
-        return self
+        pass
 
 
 build_camel_case_aliases(PyQuery)
